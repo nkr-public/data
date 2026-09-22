@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="940" viewBox="0 0 1200 940" role="img"><title>03 — Lecture : stratégie cache-aside</title><defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10Z" fill="#506580"/></marker></defs><rect width="1200" height="940" fill="#f8fafc"/>
+<text x="48" y="52" font-family="DejaVu Sans,Arial,sans-serif" font-size="28" fill="#102b49" text-anchor="start" font-weight="700">03 — Lecture : stratégie cache-aside</text>
+<text x="48" y="83" font-family="DejaVu Sans,Arial,sans-serif" font-size="15" fill="#52647b" text-anchor="start" font-weight="400">Recherche L1 → Redis L2 → base · alimentation des caches au retour</text>
+<rect x="390" y="125" width="420" height="65" rx="12" fill="#eaf2ff" stroke="#91b1db" stroke-width="1.5"/>
+<text x="600.0" y="163.5" font-family="DejaVu Sans,Arial,sans-serif" font-size="17" fill="#16324f" text-anchor="middle" font-weight="700">Demande de lecture</text>
+<rect x="390" y="245" width="420" height="75" rx="12" fill="#e0f5ef" stroke="#79b7a4" stroke-width="1.5"/>
+<text x="600.0" y="288.5" font-family="DejaVu Sans,Arial,sans-serif" font-size="17" fill="#16324f" text-anchor="middle" font-weight="700">Donnée présente en L1 ?</text>
+<rect x="390" y="395" width="420" height="75" rx="12" fill="#fff0df" stroke="#d6a66e" stroke-width="1.5"/>
+<text x="600.0" y="438.5" font-family="DejaVu Sans,Arial,sans-serif" font-size="17" fill="#16324f" text-anchor="middle" font-weight="700">Donnée présente dans Redis ?</text>
+<rect x="390" y="550" width="420" height="65" rx="12" fill="#e9e7fa" stroke="#aaa1d6" stroke-width="1.5"/>
+<text x="600.0" y="588.5" font-family="DejaVu Sans,Arial,sans-serif" font-size="17" fill="#16324f" text-anchor="middle" font-weight="700">Lire la base de données</text>
+<rect x="390" y="680" width="420" height="65" rx="12" fill="#fff0df" stroke="#d6a66e" stroke-width="1.5"/>
+<text x="600.0" y="718.5" font-family="DejaVu Sans,Arial,sans-serif" font-size="17" fill="#16324f" text-anchor="middle" font-weight="700">Alimenter Redis avec TTL</text>
+<rect x="60" y="680" width="270" height="65" rx="12" fill="#e0f5ef" stroke="#79b7a4" stroke-width="1.5"/>
+<text x="195.0" y="718.5" font-family="DejaVu Sans,Arial,sans-serif" font-size="17" fill="#16324f" text-anchor="middle" font-weight="700">Alimenter L1</text>
+<rect x="60" y="810" width="270" height="65" rx="12" fill="#eaf2ff" stroke="#91b1db" stroke-width="1.5"/>
+<text x="195.0" y="848.5" font-family="DejaVu Sans,Arial,sans-serif" font-size="17" fill="#16324f" text-anchor="middle" font-weight="700">Retourner la donnée</text>
+<polyline points="600,190 600,245" fill="none" stroke="#506580" stroke-width="2" marker-end="url(#arrow)"/>
+<polyline points="600,320 600,395" fill="none" stroke="#506580" stroke-width="2" marker-end="url(#arrow)"/>
+<text x="625" y="363" font-family="DejaVu Sans,Arial,sans-serif" font-size="13" fill="#16324f" text-anchor="middle" font-weight="400">Non</text>
+<polyline points="600,470 600,550" fill="none" stroke="#506580" stroke-width="2" marker-end="url(#arrow)"/>
+<text x="625" y="517" font-family="DejaVu Sans,Arial,sans-serif" font-size="13" fill="#16324f" text-anchor="middle" font-weight="400">Non</text>
+<polyline points="600,615 600,680" fill="none" stroke="#506580" stroke-width="2" marker-end="url(#arrow)"/>
+<polyline points="390,712 330,712" fill="none" stroke="#506580" stroke-width="2" marker-end="url(#arrow)"/>
+<polyline points="195,745 195,810" fill="none" stroke="#506580" stroke-width="2" marker-end="url(#arrow)"/>
+<polyline points="390,432 195,432 195,680" fill="none" stroke="#506580" stroke-width="2" marker-end="url(#arrow)"/>
+<text x="295" y="415" font-family="DejaVu Sans,Arial,sans-serif" font-size="13" fill="#16324f" text-anchor="middle" font-weight="400">Oui</text>
+<polyline points="810,282 1070,282 1070,842 330,842" fill="none" stroke="#506580" stroke-width="2" marker-end="url(#arrow)"/>
+<text x="965" y="262" font-family="DejaVu Sans,Arial,sans-serif" font-size="13" fill="#16324f" text-anchor="middle" font-weight="400">Oui · réponse immédiate</text>
+<text x="48" y="912" font-family="DejaVu Sans,Arial,sans-serif" font-size="13" fill="#52647b" text-anchor="start" font-weight="400">Le TTL et la taille maximale se configurent selon la nature et la fraîcheur attendue des données.</text>
+</svg>
