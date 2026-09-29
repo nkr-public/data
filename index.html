@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>HtmlEditor</title>
+    <script>
+      // Vérifier si l'application tourne dans une fenêtre standalone / popup sans barre d'adresse ni menu
+      (function () {
+        const urlParams = new URLSearchParams(window.location.search);
+        const isStandalone =
+          urlParams.get('standalone') === 'true' ||
+          window.name === 'HtmlEditorAppWindow' ||
+          window.matchMedia('(display-mode: standalone)').matches ||
+          window.navigator.standalone === true;
+
+        // Si l'utilisateur double-clique / ouvre le fichier directement et qu'on n'est pas encore en popup standalone
+        // On offre un bouton ou auto-pop si configuré
+        window.__IS_STANDALONE_WINDOW__ = isStandalone;
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

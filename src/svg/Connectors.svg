@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg font-family="Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" width="1200" height="580" viewBox="0 0 1200 580" xmlns="http://www.w3.org/2000/svg">
+  <title>Generic Frontend / Backend Architecture - External Connectors</title>
+  <desc>Section 'External Connectors' extracted from architecture.svg (group id 'panel-connectors'). Colors: blue frontend, purple business logic, green L1 cache, orange Redis, gray infrastructure, teal DevOps.</desc>
+  <defs>
+    <linearGradient id="panelBgDarkMain" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#161b22"/>
+      <stop offset="100%" stop-color="#0e1117"/>
+    </linearGradient>
+    <marker id="arrowSync" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#f8fafc" />
+    </marker>
+    <marker id="arrowAsync" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#fb923c" />
+    </marker>
+    <marker id="arrowDep" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#c084fc" />
+    </marker>
+    <marker id="arrowImpl" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <polygon points="0 1.5, 8 5, 0 8.5" fill="#161b22" stroke="#c084fc" stroke-width="1.6" />
+    </marker>
+    <marker id="arrowOps" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#2dd4bf" />
+    </marker>
+    <style>
+      .panel { fill: url(#panelBgDarkMain); stroke: #30363d; stroke-width: 1.2; rx: 12; }
+      .ptitle { font-size: 20px; font-weight: 700; fill: #f8fafc; letter-spacing: -0.01em; }
+      .psub { font-size: 13px; fill: #94a3b8; font-style: italic; }
+      .lbl { font-size: 14px; fill: #f8fafc; text-anchor: middle; font-weight: 500; }
+      .lblb { font-size: 15px; font-weight: 700; fill: #f8fafc; text-anchor: middle; }
+      .small { font-size: 11px; fill: #94a3b8; text-anchor: middle; }
+      .note { font-size: 12px; fill: #cbd5e1; }
+      .fe { fill: #1e3a8a; fill-opacity: 0.45; stroke: #3b82f6; stroke-width: 1.6; rx: 6; }
+      .biz { fill: #581c87; fill-opacity: 0.45; stroke: #a855f7; stroke-width: 1.6; rx: 6; }
+      .l1 { fill: #14532d; fill-opacity: 0.45; stroke: #22c55e; stroke-width: 1.6; rx: 6; }
+      .redis { fill: #7f1d1d; fill-opacity: 0.45; stroke: #dc382d; stroke-width: 1.6; rx: 6; }
+      .infra { fill: #334155; fill-opacity: 0.45; stroke: #94a3b8; stroke-width: 1.6; rx: 6; }
+      .ops { fill: #134e4a; fill-opacity: 0.45; stroke: #14b8a6; stroke-width: 1.6; rx: 6; }
+      .zone { fill: none; stroke: #475569; stroke-width: 1.2; stroke-dasharray: 6 4; rx: 6; }
+      .sync { stroke: #f8fafc; stroke-width: 2; fill: none; marker-end: url(#arrowSync); }
+      .async { stroke: #fb923c; stroke-width: 2; fill: none; stroke-dasharray: 6 4; marker-end: url(#arrowAsync); }
+      .dep { stroke: #c084fc; stroke-width: 2; fill: none; stroke-dasharray: 3 3; marker-end: url(#arrowDep); }
+      .impl { stroke: #c084fc; stroke-width: 2; fill: none; stroke-dasharray: 8 4; marker-end: url(#arrowImpl); }
+      .pipe { stroke: #2dd4bf; stroke-width: 2; fill: none; marker-end: url(#arrowOps); }
+      .forbid { stroke: #f87171; stroke-width: 2; fill: none; }
+      .life { stroke: #475569; stroke-width: 1.5; stroke-dasharray: 6 4; }
+    </style>
+  </defs>
+  <g id="section" transform="translate(0,-3600)">
+    <g id="panel-connectors">
+    <text x="50" y="3652" class="ptitle">External Connectors</text>
+    <rect x="60" y="3700" width="380" height="180" class="zone" />
+    <text x="250" y="3722" class="lblb">Option A — Embedded Adapter</text>
+    <rect x="75" y="3745" width="160" height="70" class="biz" /><text x="155" y="3774" class="lbl">Service Core</text><text x="155" y="3794" class="small">(Use Case)</text>
+    <rect x="265" y="3745" width="160" height="70" class="infra" /><text x="345" y="3774" class="lbl">Ext Adapter</text><text x="345" y="3794" class="small">(HTTP/REST)</text>
+    <path d="M235,3780 L265,3780" class="sync" />
+    <text x="75" y="3838" class="note" font-size="11">Stateless, short-lived calls (REST/JSON).</text>
+    <text x="75" y="3854" class="note" font-size="11">Timeouts / retries live in the adapter;</text>
+    <text x="75" y="3870" class="note" font-size="11">no separate deployment needed.</text>
+    <rect x="470" y="3700" width="680" height="180" class="zone" />
+    <text x="810" y="3722" class="lblb">Option B — Standalone Connector (own deployment)</text>
+    <rect x="485" y="3745" width="120" height="80" class="biz" /><text x="545" y="3778" class="lbl">Service</text><text x="545" y="3798" class="small">(Core)</text>
+    <rect x="635" y="3745" width="500" height="80" class="infra" />
+    <rect x="645" y="3755" width="150" height="60" fill="#1e293b" stroke="#64748b" stroke-width="1.2" rx="4" /><text x="720" y="3780" class="small" fill="#f8fafc">Internal Protocol</text><text x="720" y="3796" class="small" fill="#94a3b8">(gRPC / Kafka)</text>
+    <rect x="810" y="3755" width="150" height="60" class="biz" /><text x="885" y="3780" class="small" fill="#f8fafc" font-weight="bold">Connector</text><text x="885" y="3796" class="small" fill="#d8b4fe">Engine</text>
+    <rect x="975" y="3755" width="150" height="60" fill="#1e293b" stroke="#64748b" stroke-width="1.2" rx="4" /><text x="1050" y="3780" class="small" fill="#f8fafc">External Protocol</text><text x="1050" y="3796" class="small" fill="#94a3b8">(Fix, ISO, proprietary)</text>
+    <path d="M605,3785 L645,3785" class="sync" />
+    <path d="M795,3785 L810,3785" class="dep" />
+    <path d="M975,3785 L960,3785" class="impl" />
+    <text x="485" y="3845" class="note" font-size="11">Responsibilities: Mapping · Reconnection · Timeouts · Backpressure · Protocol conversion.</text>
+    <text x="485" y="3863" class="note" font-size="11">Use for persistent connections (sockets, sessions) or exotic protocols.</text>
+    <rect x="60" y="3900" width="1090" height="240" class="zone" />
+    <text x="605" y="3922" class="lblb">Exclusive external connection — Active / Standby connector instances</text>
+    <rect x="80" y="3945" width="200" height="60" class="biz" /><text x="180" y="3970" class="lbl">Active Connector</text><text x="180" y="3988" class="small">(holds lease)</text>
+    <rect x="80" y="4040" width="200" height="60" class="infra" /><text x="180" y="4065" class="lbl">Standby Connector</text><text x="180" y="4083" class="small">(waiting)</text>
+    <rect x="400" y="3985" width="300" height="80" class="infra" />
+    <text x="550" y="4008" class="lbl">Shared Lease Store</text>
+    <text x="550" y="4028" class="small">lease with TTL + fencing token</text>
+    <text x="550" y="4046" class="small">(e.g. DB row, Redis, coordination service)</text>
+    <rect x="820" y="3945" width="310" height="80" class="infra" />
+    <text x="975" y="3970" class="lbl">External Partner System</text>
+    <text x="975" y="3990" class="small">accepts one session; rejects stale fencing token</text>
+    <text x="975" y="4008" class="small">or broker topic / socket</text>
+    <path d="M280,3975 L820,3975" class="sync" />
+    <text x="550" y="3966" class="small" fill="#94a3b8">persistent connection + fencing token</text>
+    <path d="M280,3995 L340,3995 L340,4005 L400,4005" class="sync" />
+    <text x="340" y="3990" class="small" fill="#94a3b8">heartbeat / renew</text>
+    <path d="M280,4070 L340,4070 L340,4045 L400,4045" class="sync" />
+    <text x="340" y="4080" class="small" fill="#94a3b8">poll lease status</text>
+  </g>
+  </g>
+</svg>
