@@ -1,0 +1,579 @@
+[Keep all previous instructions unchanged.]
+
+==================================================
+35. PARALLEL EXECUTION STRATEGY
+===============================
+
+Parallelization is a PRIMARY execution requirement.
+
+Whenever several analysis tasks are independent, execute them in parallel rather than sequentially.
+
+After the initial repository discovery, build a dependency graph of analysis tasks.
+
+Classify every task as:
+
+* INDEPENDENT
+* DEPENDS_ON another task
+* BLOCKED
+
+Launch all INDEPENDENT tasks concurrently whenever the execution environment allows it.
+
+Typical parallel workstreams include:
+
+* Swing GUI analysis
+* Business service analysis
+* Persistence analysis
+* SQL/database analysis
+* External connector analysis
+* Reporting analysis
+* Cache analysis
+* Configuration analysis
+* Security analysis
+* Concurrency analysis
+* Performance analysis
+* Technical debt analysis
+
+Independent application modules should also be analyzed concurrently.
+
+Example:
+
+Repository Discovery
+|
+v
++-------------------------------+
+|      Parallel Analysis        |
++-------------------------------+
+|       |       |       |
+v       v       v       v
+GUI   Database Connectors Reports
+|       |       |       |
++-------+-------+-------+
+|
+v
+Consolidation
+|
+v
+Business Workflows
+|
+v
+Domain Discovery
+|
+v
+Target Architecture
+|
+v
+Migration Strategy
+
+Do not parallelize tasks when one requires the results of another.
+
+For example:
+
+Repository discovery
+↓
+Module identification
+↓
+Parallel module analysis
+↓
+Consolidation
+↓
+Business domain discovery
+↓
+Microservice decomposition
+
+Parallel workers must write to separate report files whenever possible to avoid concurrent modifications of the same file.
+
+Do NOT allow multiple workers to modify the same report simultaneously.
+
+Use one consolidation task after parallel analyses complete.
+
+==================================================
+36. ANALYSIS TASK REGISTRY
+==========================
+
+Maintain a persistent task registry:
+
+deepAnalyse/_state/tasks.md
+
+This file is the authoritative list of analysis tasks.
+
+For every task maintain:
+
+ID
+NAME
+TYPE
+SCOPE
+DEPENDENCIES
+STATUS
+OUTPUT
+LAST_UPDATE
+
+Allowed statuses:
+
+PENDING
+IN_PROGRESS
+COMPLETED
+FAILED
+BLOCKED
+NEEDS_REVIEW
+
+Example:
+
+| ID       | Task                    | Dependencies    | Status      | Output                  |
+| -------- | ----------------------- | --------------- | ----------- | ----------------------- |
+| DISC-001 | Repository discovery    | -               | COMPLETED   | 01-system-overview.md   |
+| GUI-001  | Swing inventory         | DISC-001        | COMPLETED   | gui/screen-inventory.md |
+| DB-001   | Persistence analysis    | DISC-001        | IN_PROGRESS | persistence/            |
+| CON-001  | Connector analysis      | DISC-001        | PENDING     | connectors/             |
+| WF-001   | Workflow reconstruction | GUI-001, DB-001 | BLOCKED     | gui/workflows/          |
+
+Update this registry continuously.
+
+==================================================
+37. CHECKPOINT / RESUME MECHANISM
+=================================
+
+The analysis may be interrupted at any moment because of:
+
+* context limits
+* token limits
+* execution interruption
+* Claude Code restart
+* user interruption
+* tool failure
+* temporary errors
+
+Therefore implement a persistent resume mechanism.
+
+Create:
+
+deepAnalyse/_state/
+
+with:
+
+deepAnalyse/_state/
+├── tasks.md
+├── checkpoint.md
+├── discoveries.md
+├── dependencies.md
+└── resume.md
+
+These files represent the persistent analysis state.
+
+==================================================
+38. CHECKPOINT POLICY
+=====================
+
+Create/update a checkpoint after every significant completed analysis unit.
+
+Do NOT wait until the complete analysis finishes.
+
+A checkpoint should be written after:
+
+* repository discovery
+* module discovery
+* completion of a module analysis
+* completion of GUI inventory
+* completion of persistence analysis
+* completion of a connector
+* completion of a report family
+* completion of cache analysis
+* completion of important workflow reconstruction
+* domain discovery
+* architecture consolidation
+* each modernization phase
+
+Update:
+
+deepAnalyse/_state/checkpoint.md
+
+with:
+
+LAST COMPLETED TASKS
+
+CURRENT TASKS
+
+PENDING TASKS
+
+BLOCKED TASKS
+
+FAILED TASKS
+
+IMPORTANT DISCOVERIES
+
+DEPENDENCIES DISCOVERED
+
+FILES ALREADY ANALYZED
+
+REPORTS GENERATED
+
+NEXT RECOMMENDED ACTIONS
+
+==================================================
+39. RESUME PROCEDURE
+====================
+
+At EVERY startup, before starting a new analysis, check whether:
+
+deepAnalyse/_state/
+
+already exists.
+
+If it exists:
+
+DO NOT restart the analysis from zero.
+
+First read:
+
+deepAnalyse/_state/tasks.md
+deepAnalyse/_state/checkpoint.md
+deepAnalyse/_state/discoveries.md
+deepAnalyse/_state/dependencies.md
+deepAnalyse/_state/resume.md
+
+Then inspect already generated reports.
+
+Determine:
+
+* what has already been completed
+* what is partially completed
+* what failed
+* what remains
+* what tasks can now run in parallel
+
+Resume from the latest consistent checkpoint.
+
+==================================================
+40. IDEMPOTENT ANALYSIS
+=======================
+
+The analysis process should be as idempotent as possible.
+
+Before executing an analysis task:
+
+1. Check the task registry.
+2. Check whether its output already exists.
+3. Check whether the task is marked COMPLETED.
+4. Validate that the output appears complete.
+5. Skip the task if it is already successfully completed.
+
+Do NOT regenerate complete reports unnecessarily.
+
+If a report is incomplete, continue it rather than restarting it whenever possible.
+
+==================================================
+41. SOURCE CHANGE DETECTION
+===========================
+
+When resuming, determine whether relevant source code changed since the previous analysis when possible.
+
+Store useful source information in the state files, such as:
+
+* analyzed module
+* analyzed paths
+* relevant commit/hash if Git is available
+* timestamp
+* important files involved
+
+If Git is available, record the analyzed commit in:
+
+deepAnalyse/_state/checkpoint.md
+
+Example:
+
+ANALYZED_GIT_COMMIT:
+abc123...
+
+On resume compare the current repository state with the analyzed state.
+
+If relevant source files changed:
+
+mark impacted tasks:
+
+NEEDS_REVIEW
+
+Do NOT automatically invalidate the entire analysis.
+
+Reanalyze only impacted areas and their dependent reports.
+
+==================================================
+42. DISCOVERY KNOWLEDGE BASE
+============================
+
+Maintain:
+
+deepAnalyse/_state/discoveries.md
+
+This file should contain compact facts discovered during analysis.
+
+Examples:
+
+* persistence technology detected
+* database type
+* Swing entry points
+* important services
+* main tables
+* cache implementations
+* external connectors
+* reporting technology
+* authentication mechanism
+* configuration mechanism
+* major business domains
+
+The purpose is to prevent parallel workers and future resumed sessions from rediscovering the same fundamental information repeatedly.
+
+==================================================
+43. DEPENDENCY REGISTRY
+=======================
+
+Maintain:
+
+deepAnalyse/_state/dependencies.md
+
+Record important discovered relationships.
+
+Examples:
+
+GUI:
+OrderPanel
+→ OrderService
+
+SERVICE:
+OrderService
+→ OrderDAO
+→ PricingConnector
+
+DATABASE:
+OrderDAO
+→ ORDER
+→ ORDER_LINE
+
+CONNECTOR:
+PricingConnector
+→ External Pricing System
+
+CACHE:
+ReferenceDataCache
+→ COUNTRY
+→ CURRENCY
+
+REPORT:
+DailyOrderReport
+→ OrderService
+→ ORDER
+→ ORDER_LINE
+
+This registry should help future analysis tasks navigate the codebase efficiently.
+
+==================================================
+44. RESUME INSTRUCTIONS
+=======================
+
+Maintain:
+
+deepAnalyse/_state/resume.md
+
+This file must be concise and optimized for another Claude Code session.
+
+It should answer:
+
+WHERE ARE WE?
+
+WHAT HAS BEEN COMPLETED?
+
+WHAT IS CURRENTLY RUNNING/INCOMPLETE?
+
+WHAT SHOULD BE DONE NEXT?
+
+WHAT CAN RUN IN PARALLEL?
+
+WHAT MUST WAIT FOR DEPENDENCIES?
+
+WHAT IMPORTANT DISCOVERIES MUST NOT BE LOST?
+
+WHAT REPORTS SHOULD NOT BE REGENERATED?
+
+The goal is that a completely new Claude Code session can read this file and immediately continue the analysis.
+
+==================================================
+45. FAILURE RECOVERY
+====================
+
+A failure in one analysis task must NOT stop independent tasks.
+
+Example:
+
+Connector A analysis → FAILED
+
+must not prevent:
+
+GUI analysis
+Database analysis
+Reporting analysis
+Cache analysis
+
+from continuing.
+
+Mark the failed task as:
+
+FAILED
+
+Record:
+
+* failure reason
+* affected scope
+* partial findings
+* suggested recovery action
+
+Continue all independent tasks.
+
+Retry failed tasks later when appropriate.
+
+==================================================
+46. PARALLEL WORKER CONSOLIDATION
+=================================
+
+Parallel analysis may discover overlapping information.
+
+After each major parallel analysis wave, execute a consolidation phase.
+
+The consolidation phase must:
+
+* merge compatible discoveries
+* identify contradictions
+* resolve duplicated findings
+* update dependencies.md
+* update discoveries.md
+* update traceability
+* update task dependencies
+* identify new analysis tasks
+* identify newly unblocked tasks
+
+Do not blindly concatenate worker outputs.
+
+==================================================
+47. DYNAMIC ANALYSIS PLAN
+=========================
+
+The analysis plan is NOT static.
+
+New findings may create new tasks.
+
+Example:
+
+GUI analysis discovers:
+PricingService
+↓
+RemotePricingConnector
+
+If RemotePricingConnector was not previously known:
+
+create a new connector-analysis task.
+
+Another example:
+
+SQL analysis discovers:
+stored procedure PKG_SETTLEMENT
+
+Create a dedicated persistence-analysis task if it is business-critical.
+
+Update tasks.md accordingly.
+
+==================================================
+48. EXECUTION WAVES
+===================
+
+Prefer execution in waves.
+
+WAVE 0 — DISCOVERY
+
+Repository
+Modules
+Dependencies
+Technologies
+
+WAVE 1 — PARALLEL DEEP ANALYSIS
+
+GUI
+Services
+Persistence
+Connectors
+Reporting
+Caching
+Configuration
+Security
+Concurrency
+
+WAVE 2 — CONSOLIDATION
+
+Cross-module dependencies
+Traceability
+Business workflows
+
+WAVE 3 — BUSINESS ARCHITECTURE
+
+Business capabilities
+Domains
+Bounded contexts
+Coupling
+
+WAVE 4 — TARGET ARCHITECTURE
+
+Hexagonal architecture
+Service boundaries
+Frontend architecture
+React/Vite
+Web/Tauri
+Micro-frontends
+Data ownership
+
+WAVE 5 — MIGRATION STRATEGY
+
+Strangler strategy
+Transition architectures
+Migration sequencing
+Risk analysis
+
+WAVE 6 — FINAL CONSOLIDATION
+
+Executive report
+Final diagrams
+Traceability
+Roadmap
+Consistency validation
+
+Each wave must create a checkpoint before proceeding to the next one.
+
+==================================================
+49. CRITICAL EXECUTION RULE
+===========================
+
+Never perform a long sequential analysis when independent tasks can safely execute concurrently.
+
+Never restart completed work after an interruption unless:
+
+* source code changed
+* previous output is incomplete
+* previous output is inconsistent
+* dependencies changed
+* explicit reanalysis is required
+
+The process must optimize for:
+
+PARALLELISM
+RESUMABILITY
+IDEMPOTENCY
+TRACEABILITY
+FAULT TOLERANCE
+INCREMENTAL PROGRESS
+
+The deepAnalyse/ directory is not only the documentation output.
+
+It is also the persistent knowledge base and execution state of the entire reverse-engineering process.
+
+A future Claude Code session must be capable of continuing the work using only:
+
+1. the repository
+2. deepAnalyse/_state/
+3. the reports already generated under deepAnalyse/
+
+without restarting the complete analysis.
