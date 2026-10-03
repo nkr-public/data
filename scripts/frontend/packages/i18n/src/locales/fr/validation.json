@@ -1,0 +1,10 @@
+{
+  "required": "Ce champ est obligatoire.",
+  "minLength": "Ce champ doit contenir au moins {{count}} caractère.",
+  "minLength_other": "Ce champ doit contenir au moins {{count}} caractères.",
+  "maxLength": "Ce champ ne doit pas dépasser {{count}} caractère.",
+  "maxLength_other": "Ce champ ne doit pas dépasser {{count}} caractères.",
+  "invalidEmail": "Adresse e-mail invalide.",
+  "invalidFormat": "Format invalide.",
+  "passwordMismatch": "Les mots de passe ne correspondent pas."
+}

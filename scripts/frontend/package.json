@@ -1,0 +1,18 @@
+{
+  "name": "ptools-frontend",
+  "private": true,
+  "version": "1.0.0",
+  "packageManager": "pnpm@9.12.0",
+  "scripts": {
+    "dev": "pnpm build:libs && pnpm --filter @app/web dev",
+    "build:ui": "pnpm --filter @app/ui build",
+    "build:i18n": "pnpm --filter @app/i18n build",
+    "build:api-client": "pnpm --filter @app/api-client build",
+    "build:libs": "pnpm build:ui && pnpm build:i18n && pnpm build:api-client",
+    "build": "pnpm build:libs && pnpm --filter @app/web build",
+    "typecheck": "pnpm build:libs && pnpm -r typecheck",
+    "dev:desktop": "pnpm build:libs && pnpm --filter @app/web desktop:dev",
+    "build:desktop": "pnpm build:libs && pnpm --filter @app/web desktop:build",
+    "clean": "powershell -ExecutionPolicy Bypass -File ../clean.ps1"
+  }
+}

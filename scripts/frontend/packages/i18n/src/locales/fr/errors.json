@@ -1,0 +1,14 @@
+{
+  "generic": "Une erreur inattendue s'est produite. Veuillez réessayer.",
+  "network": "Impossible de contacter le serveur. Vérifiez votre connexion.",
+  "unauthorized": "Session expirée. Veuillez vous reconnecter.",
+  "forbidden": "Vous n'avez pas les droits nécessaires pour effectuer cette action.",
+  "notFound": "Ressource introuvable.",
+  "conflict": "Cette ressource existe déjà.",
+  "codes": {
+    "INVALID_CREDENTIALS": "Identifiants invalides.",
+    "AUTH_SESSION_EXPIRED": "Votre session a expiré.",
+    "VALIDATION_ERROR": "Les données saisies sont invalides.",
+    "ITEM_NOT_FOUND": "Élément introuvable."
+  }
+}

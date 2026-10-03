@@ -1,0 +1,14 @@
+{
+  "generic": "An unexpected error occurred. Please try again.",
+  "network": "Unable to reach the server. Check your connection.",
+  "unauthorized": "Session expired. Please sign in again.",
+  "forbidden": "You do not have the required permissions to perform this action.",
+  "notFound": "Resource not found.",
+  "conflict": "This resource already exists.",
+  "codes": {
+    "INVALID_CREDENTIALS": "Invalid credentials.",
+    "AUTH_SESSION_EXPIRED": "Your session has expired.",
+    "VALIDATION_ERROR": "The submitted data is invalid.",
+    "ITEM_NOT_FOUND": "Item not found."
+  }
+}
