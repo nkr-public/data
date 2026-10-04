@@ -1,0 +1,183 @@
+# Autonomous Build & Validation
+
+Act autonomously when validating code changes.
+
+## General behavior
+
+After modifying source code:
+
+1. Detect the technologies used by the project.
+2. Detect the affected module(s).
+3. Detect the project's existing build system and scripts.
+4. Select the safest appropriate validation commands.
+5. Execute validation without asking the user.
+6. Analyze compilation, type-check, lint and test failures.
+7. Fix failures caused by the current changes.
+8. Run validation again.
+9. Repeat until validation succeeds or an external blocker is found.
+
+Never hardcode project names, directories or module names.
+
+Prefer project wrappers and existing project scripts over globally installed tools.
+
+## Java
+
+Detect:
+- pom.xml
+- mvnw / mvnw.cmd
+- build.gradle
+- build.gradle.kts
+- gradlew / gradlew.bat
+
+For Maven prefer:
+
+./mvnw test
+./mvnw verify
+
+or when no wrapper exists:
+
+mvn test
+mvn verify
+
+For Gradle prefer:
+
+./gradlew test
+./gradlew build
+
+On Windows use the corresponding .cmd or .bat wrapper when necessary.
+
+For multi-module projects, identify the affected module and prefer
+validating that module and its required dependencies before rebuilding
+the entire repository.
+
+## TypeScript / JavaScript
+
+Detect:
+- package.json
+- tsconfig.json
+- pnpm-lock.yaml
+- yarn.lock
+- package-lock.json
+- pnpm-workspace.yaml
+
+Determine the package manager from the lock file.
+
+Prefer existing package.json scripts such as:
+
+typecheck
+check
+lint
+test
+build
+
+Examples:
+
+pnpm typecheck
+pnpm test
+pnpm build
+
+npm run typecheck
+npm test
+npm run build
+
+yarn typecheck
+yarn test
+yarn build
+
+If no typecheck script exists and TypeScript is configured:
+
+npx tsc --noEmit
+
+For monorepos, determine the affected workspace/package and execute
+validation from the appropriate workspace.
+
+## Rust
+
+Detect:
+
+Cargo.toml
+Cargo.lock
+
+Prefer:
+
+cargo check
+cargo test
+
+When appropriate:
+
+cargo clippy
+
+For Cargo workspaces, determine the affected crate before validating
+the complete workspace.
+
+## Other technologies
+
+Detect other build systems from their standard configuration files.
+
+Examples include:
+
+Python:
+pyproject.toml
+requirements.txt
+
+Go:
+go.mod
+
+.NET:
+*.csproj
+*.sln
+
+C/C++:
+CMakeLists.txt
+Makefile
+
+Use existing project-native validation commands whenever possible.
+
+## Failure handling
+
+When a command fails:
+
+1. Read the complete relevant error.
+2. Determine whether it was caused by the current changes.
+3. Fix the source/configuration when appropriate.
+4. Execute the validation again.
+5. Continue until validation succeeds.
+
+Do not repeatedly execute the same failing command without making
+progress.
+
+## Safety
+
+Normal development operations may be executed autonomously:
+
+- compilation
+- type checking
+- linting
+- unit tests
+- local builds
+- reading files
+- modifying project source files
+
+Require explicit user approval for:
+
+- git push
+- force push
+- publishing packages
+- production deployment
+- database destructive operations
+- deleting large numbers of files
+- modifying credentials or secrets
+- sudo / administrator operations
+- commands outside the project with significant side effects
+
+## Completion criteria
+
+Do not consider a coding task complete until the relevant validation
+has succeeded.
+
+At completion report:
+
+- files/components changed
+- validation commands executed
+- validation result
+- remaining issues, if any
