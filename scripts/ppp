@@ -1,0 +1,1209 @@
+# JAVA CODE INTELLIGENCE — BACKEND ONLY
+# Java 25 + Spring Boot + JavaParser + JGraphT + SQLite
+
+## 1. ROLE
+
+Act as a Principal Java Architect, Static Analysis Expert, Graph Algorithms Engineer, and Performance Optimization Specialist.
+
+Design and implement a complete, efficient, maintainable Java backend capable of analyzing an existing Java project and building a persistent method-level and class-level dependency graph.
+
+The backend will later be consumed by a React application using Mermaid.js and Monaco Editor.
+
+IMPORTANT:
+- Implement BACKEND ONLY.
+- Do not create any frontend code.
+- Do not create React components.
+- Do not generate Mermaid diagrams.
+- Expose structured JSON APIs suitable for future graph visualization.
+
+Work autonomously and implement actual working functionality.
+
+---
+
+# 2. ACTUAL PROJECT SIZE
+
+The target Java project contains approximately:
+
+- 1,790 classes and interfaces.
+- 22,000 methods.
+- 10 lines of code per method on average.
+- 220,000 lines inside method bodies.
+
+Optimize for this workload.
+
+Do not overengineer for millions of methods.
+
+The architecture should nevertheless remain scalable.
+
+The application must support:
+
+- Multi-module Maven projects.
+- Java 8 through Java 25 source code.
+- Interfaces and inheritance.
+- Method overloading.
+- Method overriding.
+- Generic types.
+- Spring dependency injection.
+- External Maven dependencies.
+- Complex method-call chains.
+
+---
+
+# 3. TECHNOLOGY STACK
+
+Mandatory:
+
+- Java JDK 25
+- Spring Boot compatible with Java 25
+- Maven
+- JavaParser
+- JavaSymbolSolver
+- JGraphT
+- SQLite
+- Spring JDBC
+- Caffeine Cache
+- Jackson
+- SLF4J
+
+Optional:
+
+- SootUp for advanced bytecode analysis if necessary.
+
+Avoid unnecessary frameworks.
+
+Do not introduce:
+
+- Neo4j
+- Docker
+- Redis
+- Elasticsearch
+- Kafka
+- Microservices
+
+The application must run as a single Spring Boot process.
+
+---
+
+# 4. BACKEND ARCHITECTURE
+
+Use a modular monolith.
+
+Prefer package-level modularity over unnecessary Maven modules.
+
+Suggested structure:
+
+src/main/java/com/codeintelligence/
+    application/
+    analysis/
+        parser/
+        resolver/
+        extractor/
+        incremental/
+    graph/
+        model/
+        builder/
+        traversal/
+        metrics/
+    architecture/
+        modules/
+        dependencies/
+        communities/
+        cycles/
+    source/
+        reader/
+        locator/
+        navigation/
+    persistence/
+        entity/
+        repository/
+    api/
+        controller/
+        dto/
+    config/
+
+Maintain clear separation between:
+
+1. Source parsing.
+2. Symbol resolution.
+3. Graph construction.
+4. Graph persistence.
+5. Graph algorithms.
+6. Architecture analysis.
+7. Source navigation.
+8. REST API.
+
+Avoid circular dependencies.
+
+Use Java records for immutable DTOs.
+
+Avoid unnecessary interfaces and abstractions.
+
+---
+
+# 5. PROJECT IMPORT
+
+Implement the ability to register an existing local Java project.
+
+Input:
+
+{
+  "name": "legacy-project",
+  "rootPath": "C:/projects/legacy"
+}
+
+The backend must:
+
+1. Validate the project directory.
+2. Detect Maven modules.
+3. Detect Java source directories.
+4. Detect source files.
+5. Resolve available Maven dependencies.
+6. Build the project structure.
+7. Persist project metadata.
+
+Support Windows and Linux paths.
+
+Never modify the analyzed project's source files.
+
+The analyzer must be read-only.
+
+---
+
+# 6. JAVA SOURCE ANALYSIS
+
+Use JavaParser and JavaSymbolSolver.
+
+Extract the following entities.
+
+## MODULE
+
+- ID
+- Name
+- Path
+- Parent module
+- Maven coordinates
+- Dependencies
+
+## PACKAGE
+
+- ID
+- Name
+- Module
+- Classes count
+
+## CLASS / INTERFACE
+
+- ID
+- Fully qualified name
+- Simple name
+- Module
+- Package
+- Source file
+- Start/end lines
+- Visibility
+- Modifiers
+- Annotations
+- Parent class
+- Implemented interfaces
+- Fields
+- Constructors
+- Methods
+
+Support:
+
+- Classes
+- Interfaces
+- Enums
+- Records
+- Abstract classes
+- Nested classes
+- Anonymous classes
+
+## METHOD
+
+Extract:
+
+- Stable unique ID
+- Declaring class
+- Name
+- Fully qualified signature
+- Return type
+- Parameters
+- Parameter names
+- Parameter types
+- Generic parameters
+- Exceptions
+- Annotations
+- Visibility
+- Static/abstract/final modifiers
+- Start line
+- End line
+- Start column
+- End column
+- Source file
+- Incoming call count
+- Outgoing call count
+
+Use unique identifiers that distinguish overloaded methods.
+
+Include module identity where necessary.
+
+---
+
+# 7. METHOD CALL ANALYSIS
+
+This is a critical feature.
+
+Build a complete static method-call graph.
+
+Detect:
+
+- Direct method calls
+- Static method calls
+- Constructor calls
+- Interface method calls
+- Inherited methods
+- Overridden methods
+- Polymorphic calls
+- Lambda expressions
+- Method references
+- Recursive calls
+- Cross-module calls
+
+Support Spring patterns:
+
+- @Controller
+- @RestController
+- @Service
+- @Repository
+- @Component
+- @Autowired
+- Constructor injection
+- @Bean
+- @Configuration
+- @Qualifier
+- @Primary
+
+When a method invokes an interface method:
+
+1. Identify the declared interface method.
+2. Find compatible implementations.
+3. Use Spring injection metadata where possible.
+4. Identify possible runtime targets.
+5. Create relationships with resolution status.
+
+Resolution statuses:
+
+EXACT
+POSSIBLE_DYNAMIC
+FRAMEWORK_INFERRED
+UNRESOLVED
+
+Never silently discard unresolved calls.
+
+Never represent an inferred call as a guaranteed runtime call.
+
+Store the source location of every invocation.
+
+Example:
+
+OrderController.getOrders()
+    |
+    v
+OrderService.findOrders()
+    |
+    +--> OrderValidator.validate()
+    |
+    +--> OrderRepository.findAll()
+
+Store individual call sites separately from aggregated
+method-to-method relationships.
+
+---
+
+# 8. GRAPH DATA MODEL
+
+Use JGraphT.
+
+Implement a directed graph with:
+
+## Nodes
+
+- PROJECT
+- MODULE
+- PACKAGE
+- CLASS
+- INTERFACE
+- METHOD
+- CONSTRUCTOR
+- FIELD
+- REST_ENDPOINT
+- DATABASE_TABLE
+- EXTERNAL_DEPENDENCY
+
+## Relationships
+
+- CONTAINS
+- DECLARES
+- EXTENDS
+- IMPLEMENTS
+- CALLS
+- OVERRIDES
+- USES
+- READS
+- WRITES
+- INJECTS
+- DEPENDS_ON
+- EXPOSES
+- QUERIES
+- UPDATES
+
+Use a property graph abstraction.
+
+Each node must have:
+
+- Stable ID
+- Type
+- Name
+- Qualified name
+- Module ID
+- Metadata
+
+Each relationship must have:
+
+- Source ID
+- Target ID
+- Relationship type
+- Resolution status
+- Call-site information where applicable
+
+Optimize the in-memory graph for fast traversal.
+
+Avoid duplicating large metadata objects inside graph vertices.
+
+Use lightweight IDs where practical.
+
+---
+
+# 9. SQLITE PERSISTENCE
+
+Use SQLite as the persistent storage engine.
+
+Create tables:
+
+projects
+modules
+packages
+types
+methods
+parameters
+fields
+source_files
+graph_nodes
+graph_edges
+call_sites
+analysis_runs
+class_metrics
+method_metrics
+communities
+
+Create indexes for:
+
+- Qualified class name
+- Qualified method signature
+- Module ID
+- Source node ID
+- Target node ID
+- Relationship type
+- Source file ID
+
+Enable WAL mode.
+
+Use prepared statements and batch inserts.
+
+Use transactions.
+
+Ensure consistent graph updates.
+
+Avoid N+1 queries.
+
+Store source locations rather than duplicating entire
+Java source files in SQLite.
+
+Implement database schema initialization and migrations.
+
+---
+
+# 10. GRAPH LOADING STRATEGY
+
+The target project contains approximately 22,000 methods.
+
+Prefer keeping the method-call graph in memory.
+
+Use SQLite for persistence.
+
+On application startup:
+
+1. Load registered project metadata.
+2. Load graph vertices and edges on demand.
+3. Build or restore the in-memory graph when required.
+4. Cache frequently used graph queries.
+
+Support multiple registered projects.
+
+Avoid loading all projects into memory unnecessarily.
+
+Use bounded caches.
+
+The graph must support fast:
+
+- Caller lookup
+- Callee lookup
+- Shortest path
+- Reachability
+- Cycle detection
+- Impact analysis
+
+---
+
+# 11. GRAPH TRAVERSAL
+
+Implement the following operations.
+
+## Direct callers
+
+Given method M, return all methods calling M.
+
+## Direct callees
+
+Given method M, return all methods invoked by M.
+
+## Transitive callers
+
+Return all methods that can reach M.
+
+## Transitive callees
+
+Return all methods reachable from M.
+
+## Shortest path
+
+Find the shortest method-call path between two methods.
+
+## Multiple paths
+
+Find multiple distinct paths between two methods.
+
+Use configurable limits to avoid combinatorial explosion.
+
+## Forward traversal
+
+Explore outgoing calls.
+
+## Reverse traversal
+
+Explore incoming calls.
+
+## Bidirectional traversal
+
+Explore both directions.
+
+Parameters:
+
+- methodId
+- direction
+- maxDepth
+- maxNodes
+- maxEdges
+- relationshipTypes
+- includeExternalDependencies
+- includeUnresolved
+
+Implement cycle protection.
+
+Support cancellation and timeouts for expensive operations.
+
+---
+
+# 12. CLASS AND METHOD METRICS
+
+Calculate metrics at method, class, package and module levels.
+
+## Dependency metrics
+
+- Incoming relationships
+- Outgoing relationships
+- Fan-in
+- Fan-out
+- Number of callers
+- Number of callees
+- Number of dependent classes
+- Number of dependencies
+- Cross-module dependencies
+
+## Graph metrics
+
+- PageRank
+- Betweenness centrality
+- Strongly connected components
+- Reachability
+- Cycle participation
+
+## Code metrics
+
+- Lines of code
+- Method count
+- Cyclomatic complexity
+- Coupling indicators
+- Cohesion indicators
+
+## Impact analysis
+
+For each class or method calculate:
+
+- Directly affected methods
+- Transitively affected methods
+- Affected classes
+- Affected modules
+- Affected REST endpoints
+
+Use scalable algorithms.
+
+Do not run expensive exact centrality algorithms unnecessarily.
+
+Use approximation when appropriate.
+
+---
+
+# 13. CLASS RELEVANCE SCORE
+
+Implement configurable class relevance scoring.
+
+Default formula:
+
+RelevanceScore =
+    0.25 * PageRank
+  + 0.20 * FanIn
+  + 0.20 * Betweenness
+  + 0.20 * Impact
+  + 0.15 * CrossModuleDependencies
+
+Normalize metrics before combining them.
+
+Make weights configurable.
+
+Return:
+
+- Global relevance score
+- Individual metric values
+- Ranking within project
+- Ranking within module
+- Number of incoming relationships
+- Number of outgoing relationships
+- Impact indicators
+
+Do not assume highly connected technical utilities are
+necessarily business-critical.
+
+Keep structural relevance separate from inferred
+business importance.
+
+---
+
+# 14. AUTOMATIC MODULE DETECTION
+
+Detect physical and logical modules.
+
+## Physical modules
+
+- Maven modules
+- Packages
+- Source boundaries
+
+## Logical modules
+
+Infer candidate business modules using:
+
+- Class dependencies
+- Method-call relationships
+- Package structure
+- Shared entities
+- Domain vocabulary
+- Service interactions
+- Repository relationships
+- Graph communities
+
+Implement:
+
+- Strongly connected components
+- Weakly connected components
+- Community detection
+- Dependency clustering
+
+Use an appropriate community detection algorithm.
+
+For each detected module return:
+
+- Module ID
+- Suggested name
+- Classes
+- Methods count
+- Internal relationships
+- External relationships
+- Coupling metrics
+- Cohesion indicators
+- Detection evidence
+
+Clearly distinguish physical modules from inferred logical modules.
+
+---
+
+# 15. SOURCE CODE NAVIGATION
+
+This feature is mandatory.
+
+The future React frontend must be able to display the exact
+source code of a method when its graph node is selected.
+
+Implement source retrieval APIs.
+
+For each method store:
+
+- Project ID
+- Module ID
+- Source file path
+- File hash
+- Start line
+- End line
+- Start column
+- End column
+- Method signature
+
+Implement two retrieval modes.
+
+## Method source
+
+Return only the selected method source.
+
+## Complete class source
+
+Return the complete Java source file with the selected
+method location.
+
+Example response:
+
+{
+  "methodId": "m123",
+  "className": "OrderService",
+  "methodName": "findOrders",
+  "filePath": "src/main/java/com/app/OrderService.java",
+  "startLine": 42,
+  "endLine": 51,
+  "source": "public List<Order> findOrders(...) { ... }",
+  "parameters": [],
+  "returnType": "List<Order>"
+}
+
+Read source directly from the filesystem.
+
+Detect stale source locations.
+
+Never return incorrect source silently.
+
+Restrict file access to registered project roots.
+
+Support external source JARs when available.
+
+---
+
+# 16. CALL-SITE NAVIGATION
+
+Implement precise navigation between methods.
+
+When the future Monaco Editor sends a source position:
+
+1. Identify the corresponding indexed call site.
+2. Resolve its target method.
+3. Return target method metadata.
+4. Return possible implementations when ambiguous.
+5. Return target source location.
+
+Example:
+
+GET /api/source/resolve-call?fileId=123&line=48&column=15
+
+Response:
+
+{
+  "callSiteId": "c456",
+  "resolution": "EXACT",
+  "targets": [
+    {
+      "methodId": "m789",
+      "className": "OrderRepository",
+      "methodName": "findAll",
+      "filePath": "...",
+      "startLine": 20
+    }
+  ]
+}
+
+Do not use text matching to resolve method calls.
+
+Use JavaParser symbol resolution and indexed call-site data.
+
+---
+
+# 17. REST API
+
+Implement JSON REST APIs designed for a future React frontend.
+
+## Projects
+
+POST   /api/projects
+GET    /api/projects
+GET    /api/projects/{id}
+DELETE /api/projects/{id}
+POST   /api/projects/{id}/analyze
+GET    /api/projects/{id}/status
+
+## Modules
+
+GET /api/projects/{id}/modules
+GET /api/modules/{id}
+GET /api/modules/{id}/classes
+GET /api/modules/{id}/dependencies
+
+## Classes
+
+GET /api/classes/{id}
+GET /api/classes/{id}/methods
+GET /api/classes/{id}/dependencies
+GET /api/classes/{id}/metrics
+GET /api/classes/{id}/impact
+
+## Methods
+
+GET /api/methods/{id}
+GET /api/methods/{id}/source
+GET /api/methods/{id}/callers
+GET /api/methods/{id}/callees
+GET /api/methods/{id}/metrics
+
+## Graph
+
+POST /api/graph/traverse
+POST /api/graph/paths
+POST /api/graph/impact
+GET  /api/graph/metrics
+GET  /api/graph/communities
+GET  /api/graph/cycles
+
+## Source
+
+GET /api/source/file
+GET /api/source/method
+GET /api/source/resolve-call
+
+## Search
+
+GET /api/search
+
+## Analysis
+
+GET  /api/analysis/{id}/progress
+POST /api/analysis/{id}/cancel
+
+Use stable IDs and consistent DTOs.
+
+Implement pagination.
+
+Implement validation and structured error handling.
+
+---
+
+# 18. GRAPH JSON FORMAT FOR FUTURE MERMAID FRONTEND
+
+Do not generate Mermaid syntax in the backend.
+
+Return structured graph JSON.
+
+Example:
+
+{
+  "nodes": [
+    {
+      "id": "m1",
+      "type": "METHOD",
+      "label": "OrderController.getOrders()",
+      "classId": "c1",
+      "moduleId": "mod1",
+      "incomingCount": 0,
+      "outgoingCount": 1,
+      "relevanceScore": 0.75
+    },
+    {
+      "id": "m2",
+      "type": "METHOD",
+      "label": "OrderService.findOrders()",
+      "classId": "c2",
+      "moduleId": "mod1",
+      "incomingCount": 5,
+      "outgoingCount": 3,
+      "relevanceScore": 0.92
+    }
+  ],
+  "edges": [
+    {
+      "id": "e1",
+      "source": "m1",
+      "target": "m2",
+      "type": "CALLS",
+      "resolution": "EXACT"
+    }
+  ],
+  "totalNodes": 2,
+  "totalEdges": 1,
+  "truncated": false
+}
+
+Support:
+
+- Method-level graph
+- Class-level graph
+- Package-level graph
+- Module-level graph
+- Impact graph
+- Dependency graph
+
+The frontend will convert JSON into Mermaid diagrams.
+
+Keep graph DTOs independent of visualization libraries.
+
+---
+
+# 19. SEARCH
+
+Implement fast indexed search.
+
+Support:
+
+- Class name
+- Interface name
+- Method name
+- Fully qualified name
+- Package
+- Module
+- Annotation
+- Parameter type
+- Return type
+
+Use SQLite indexes and FTS5 where appropriate.
+
+Support:
+
+- Exact match
+- Partial match
+- Prefix match
+- Pagination
+- Filters
+
+Return method IDs and source locations.
+
+---
+
+# 20. INCREMENTAL ANALYSIS
+
+Implement incremental source indexing.
+
+Track:
+
+- File path
+- File hash
+- Last modification time
+- Extracted symbols
+- Dependent symbols
+- Analysis version
+
+When a source file changes:
+
+1. Detect the modification.
+2. Reparse the file.
+3. Update class and method metadata.
+4. Remove obsolete relationships.
+5. Re-resolve impacted symbols.
+6. Update graph storage.
+7. Refresh affected metrics.
+8. Invalidate affected caches.
+
+Avoid complete project reindexing when unnecessary.
+
+Support manual full reindexing.
+
+---
+
+# 21. PERFORMANCE
+
+Optimize for:
+
+1,790 classes
+22,000 methods
+Approximately 220,000 method-body lines
+
+Priorities:
+
+1. Accurate symbol resolution.
+2. Fast indexing.
+3. Fast caller/callee queries.
+4. Fast graph traversal.
+5. Low memory consumption.
+6. Efficient SQLite persistence.
+7. Incremental updates.
+
+Use:
+
+- Parallel parsing when beneficial.
+- Bounded concurrency.
+- Batched SQL operations.
+- Prepared statements.
+- Caffeine caching.
+- Lightweight graph nodes.
+- Efficient adjacency traversal.
+
+Avoid unnecessary graph duplication.
+
+Avoid loading source-code text into graph vertices.
+
+Use lazy initialization where appropriate.
+
+---
+
+# 22. EXECUTION STRATEGY
+
+Implement incrementally.
+
+PHASE 1:
+- Spring Boot project
+- SQLite schema
+- Project import
+- Maven module discovery
+
+PHASE 2:
+- JavaParser integration
+- Class extraction
+- Method extraction
+- Parameter extraction
+- Source indexing
+
+PHASE 3:
+- Symbol resolution
+- Method-call extraction
+- Interface resolution
+- Graph construction
+- SQLite persistence
+
+PHASE 4:
+- JGraphT traversal
+- Callers/callees
+- Shortest paths
+- Cycles
+- Impact analysis
+
+PHASE 5:
+- Class metrics
+- Method metrics
+- Relevance scoring
+- Module detection
+
+PHASE 6:
+- Source navigation APIs
+- Graph JSON APIs
+- Search
+- Incremental analysis
+- Performance optimization
+
+Prioritize a working end-to-end backend before advanced features.
+
+---
+
+# 23. STRICT CODE GENERATION RULES
+
+These rules override all other instructions.
+
+## NO COMMENTS
+
+Do not generate:
+
+- Java comments
+- Javadoc
+- TODO comments
+- FIXME comments
+- SQL comments
+- Configuration comments
+
+Use descriptive names instead.
+
+## NO TESTS
+
+Do not generate:
+
+- Unit tests
+- Integration tests
+- Test classes
+- Test directories
+- Test fixtures
+- Mock implementations
+- Benchmark classes
+
+## NO DOCUMENTATION
+
+Do not generate:
+
+- README files
+- Markdown documentation
+- Architecture documentation
+- Implementation plan files
+- Progress tracking files
+- OpenAPI documentation
+- Swagger configuration
+
+## NO FRONTEND
+
+Do not generate:
+
+- React code
+- TypeScript code
+- HTML pages
+- CSS files
+- Frontend components
+- Mermaid diagrams
+- Monaco Editor integration
+
+Only implement the backend APIs required by the future frontend.
+
+## CODE QUALITY
+
+- No placeholder methods.
+- No unused classes.
+- No unnecessary interfaces.
+- No unnecessary dependencies.
+- No incomplete implementations.
+- No excessive abstractions.
+- No speculative features.
+
+Generate only production code required for the application.
+
+---
+
+# 24. AUTONOMOUS DEVELOPMENT
+
+Work autonomously.
+
+Before implementation:
+
+1. Inspect the current repository.
+2. Verify JDK 25 and Maven.
+3. Identify existing reusable components.
+4. Choose compatible dependency versions.
+5. Define the implementation sequence internally.
+
+During implementation:
+
+- Implement directly.
+- Compile frequently.
+- Fix compilation errors.
+- Resolve dependency conflicts.
+- Keep the project buildable.
+- Avoid unnecessary confirmation requests.
+- Do not modify the analyzed project's source files.
+- Do not delete unrelated user files.
+
+Do not stop after creating the project skeleton.
+
+Do not create documentation or test classes.
+
+---
+
+# 25. FINAL ACCEPTANCE CRITERIA
+
+The backend must be capable of:
+
+1. Registering a local Java project.
+2. Detecting Maven modules.
+3. Analyzing 1,790 classes and interfaces.
+4. Extracting approximately 22,000 methods.
+5. Extracting method parameters and signatures.
+6. Resolving method calls.
+7. Identifying interface implementations.
+8. Building a directed method-call graph.
+9. Persisting graph data in SQLite.
+10. Finding direct callers and callees.
+11. Finding transitive dependencies.
+12. Finding paths between methods.
+13. Detecting dependency cycles.
+14. Calculating class relevance metrics.
+15. Identifying potential logical modules.
+16. Returning method source code.
+17. Resolving method invocations to definitions.
+18. Returning graph data as JSON.
+19. Supporting incremental indexing.
+20. Running locally as a Spring Boot application.
+
+The backend must compile successfully using Java 25.
+
+No frontend.
+No tests.
+No documentation.
+No code comments.
+
+---
+
+# 26. START IMPLEMENTATION
+
+Start immediately.
+
+First implement this complete vertical slice:
+
+LOCAL JAVA PROJECT
+        |
+        v
+PROJECT IMPORT
+        |
+        v
+JAVAPARSER
+        |
+        v
+CLASS / METHOD EXTRACTION
+        |
+        v
+SYMBOL RESOLUTION
+        |
+        v
+METHOD CALL GRAPH
+        |
+        v
+SQLITE PERSISTENCE
+        |
+        v
+JGRAPHT
+        |
+        v
+SPRING BOOT REST API
+        |
+        v
+JSON GRAPH RESPONSE
+
+Then implement:
+
+- Source navigation.
+- Caller/callee queries.
+- Path finding.
+- Metrics.
+- Module detection.
+- Incremental analysis.
+
+Compile the backend and fix all compilation errors.
+
+Do not stop at planning or scaffolding.
+
+Implement the complete backend now.
