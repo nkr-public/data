@@ -1,0 +1,87 @@
+Create a new microfrontend named "Code Intelligence" within the existing application.
+
+Before implementation:
+- Analyze the existing project structure, architecture, and microfrontend organization.
+- Strictly reuse the existing application template, layout, theme, navigation, components, and coding conventions.
+- Reuse existing shared packages whenever possible.
+- Create or install additional packages only when necessary.
+- Integrate the new microfrontend into the existing routing and navigation.
+- Do not modify unrelated application features.
+
+Technology:
+- React 19
+- TypeScript
+- Mermaid.js for interactive graph visualization
+- Monaco Editor for Java source code
+- Existing API client and state management solutions
+
+The microfrontend must communicate with the existing Java Spring Boot backend.
+
+Features:
+
+1. Project Explorer
+   - Browse modules, packages, classes, interfaces, and methods.
+   - Search and filter elements.
+   - Display class and method metadata.
+
+2. Interactive Graph Explorer
+   - Visualize method calls and dependencies using Mermaid.
+   - Support zoom, pan, node selection, and dynamic expansion.
+   - Show callers and callees.
+   - Navigate between classes and methods.
+   - Display dependency paths.
+   - Support module, package, class, and method graph views.
+
+3. Source Code Viewer
+   - Display Java source code using Monaco Editor.
+   - Clicking a method in Mermaid opens its source code.
+   - Highlight the selected method.
+   - Navigate between method calls and definitions.
+   - Display method parameters, return types, and metadata.
+
+4. Architecture Analysis
+   - Display physical and logical modules.
+   - Visualize dependencies and cycles.
+   - Display class relevance, coupling, and impact metrics.
+
+5. User Interface
+   - Use the existing application design system.
+   - Provide three resizable panels:
+     Left: Project Explorer
+     Center: Mermaid Graph
+     Right: Monaco Source Editor
+   - Support existing light/dark themes.
+   - Add contextual menus and navigation controls.
+   - Preserve selection and navigation history.
+
+Performance:
+- The analyzed project contains approximately 1,790 classes and 22,000 methods.
+- Load data progressively.
+- Use lazy graph expansion.
+- Avoid rendering the entire graph.
+- Cache API responses using existing project conventions.
+- Keep Mermaid rendering responsive.
+
+Architecture:
+- Implement this feature as an independent microfrontend.
+- Respect existing microfrontend boundaries and integration mechanisms.
+- Reuse shared UI, API, configuration, and utility packages.
+- Keep graph visualization components reusable.
+- Use actual backend REST APIs.
+- Do not create mock data or fake endpoints.
+- Do not modify the backend.
+
+Mandatory rules:
+- No code comments.
+- No test files or test classes.
+- No documentation files.
+- No unnecessary dependencies.
+- No placeholder implementations.
+- Respect the existing application template and conventions.
+- Do not recreate components already available in shared packages.
+- Do not introduce a new design system.
+- Do not modify unrelated microfrontends.
+
+Implement autonomously without unnecessary confirmation requests.
+
+Build the microfrontend, resolve compilation errors, and ensure it integrates correctly with the existing application.
